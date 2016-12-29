@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="plane.DataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close" lazy-init="false">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <!-- 基本属性 url、user、password -->
+        <!--<property name="url"-->
+                  <!--value="jdbc:mysql://192.168.96.92:3306/by_plane_1123?useUnicode=true&amp;characterEncoding=utf-8"/>-->
+        <!--<property name="username" value="dbadmin"/>-->
+        <!--<property name="password" value="123..Com"/>-->
+        <property name="url"
+                  value="jdbc:mysql://${mysql.url}?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="username" value="${mysql.username}"/>
+        <property name="password" value="${mysql.password}"/>
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="2"/>
+        <property name="minIdle" value="2"/>
+        <property name="maxActive" value="300"/>
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="60000"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="false"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize"
+                  value="200"/>
+        <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->
+        <property name="filters" value="stat"/>
+    </bean>
+
+
+    <!-- ========================================针对myBatis的配置项============================== -->
+    <!-- 配置sqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 实例化sqlSessionFactory时需要使用上述配置好的数据源以及SQL映射文件 -->
+        <property name="dataSource" ref="plane.DataSource"/>
+        <!-- 自动扫描mapping/目录下的所有SQL映射的xml文件, 省掉Configuration.xml里的手工配置
+        value="classpath:mapping/*.xml"指的是classpath(类路径)下mapping包中的所有xml文件-->
+        <property name="mapperLocations" value="classpath:mapping/*.xml"/>
+        <!--<property name="configLocation" value="classpath:mybatis-config.xml"/>-->
+    </bean>
+
+    <!-- 配置扫描器 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 扫描com.by.plan.soa.dao.mapper这个包以及它的子包下的所有映射接口类 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.by.dynamic.config.dao.mapper"/>
+    </bean>
+</beans>

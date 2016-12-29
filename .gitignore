@@ -61,3 +61,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Idea config files
+.idea
+target
+*.iml

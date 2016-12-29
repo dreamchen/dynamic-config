@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM
+        "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration>
+
+    <!-- 输出到日志文件  -->
+    <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+        <!-- 设置File参数：日志输出文件名 -->
+        <param name="file" value="${log.path}/plane.log"/>
+        <!-- 设置是否在重新启动服务时，在原有日志的基础添加新日志 -->
+        <param name="Append" value="true"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="ERROR"/>
+        </filter>
+    </appender>
+
+    <!-- 输出到控制台中 -->
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+        </filter>
+    </appender>
+
+    <appender name="dubboRedisAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="file" value="${log.path}/plane-comm.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <appender name="dubboServiceAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="file" value="${log.path}/plane-dubbo-service.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <appender name="restServiceAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="file" value="${log.path}/plane-rest-service.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <appender name="rpcDubboServiceAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="file" value="${log.path}/plane-rpc-dubbo.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <appender name="rpcRestServiceAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="file" value="${log.path}/plane-rpc-rest.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <appender name="workerAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="file" value="${log.path}/plane-soa-worker.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <appender name="FILE-SQL" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="false"/>
+        <param name="file" value="${log.path}/plane-sql.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <appender name="jiesuanAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="file" value="${log.path}/plane-rest-jiesuan.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%7r] %6p - %30.30c - %m \n"/>
+        </layout>
+    </appender>
+
+    <logger name="com.by.plane.soa.common" additivity="false">
+        <level value="${log.level}"/>
+        <appender-ref ref="dubboRedisAppender"/>
+    </logger>
+
+    <logger name="com.by.plane.soa.service.dubbo" additivity="false">
+        <level value="${log.level}"/>
+        <appender-ref ref="dubboServiceAppender"/>
+    </logger>
+
+    <logger name="com.by.plane.soa.service.rest" additivity="false">
+        <level value="${log.level}"/>
+        <appender-ref ref="restServiceAppender"/>
+    </logger>
+
+    <logger name="com.by.plane.soa.dubbo.service" additivity="false">
+        <level value="${log.level}"/>
+        <appender-ref ref="rpcDubboServiceAppender"/>
+    </logger>
+
+    <logger name="com.by.plane.soa.rest.service" additivity="false">
+        <level value="${log.level}"/>
+        <appender-ref ref="rpcRestServiceAppender"/>
+    </logger>
+
+    <logger name="com.by.plane.soa.worker" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="workerAppender"/>
+    </logger>
+
+    <logger name="jiesuanLogger" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="jiesuanAppender"/>
+    </logger>
+
+    <logger name="com.ibatis" additivity="true">
+        <level value="ERROR"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <category name="java.sql" additivity="false">
+        <priority value="ERROR"/>
+        <appender-ref ref="FILE-SQL"/>
+        <appender-ref ref="CONSOLE"/>
+    </category>
+
+    <root>
+        <priority value="${log.level}"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</log4j:configuration>
