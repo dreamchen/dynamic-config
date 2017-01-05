@@ -47,6 +47,7 @@
         <property name="locations">
             <list>
                 <value>classpath:/prop/mysql.properties</value>
+                <value>classpath:/prop/mysql.read.properties</value>
             </list>
         </property>
     </bean>

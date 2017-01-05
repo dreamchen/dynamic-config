@@ -4,44 +4,74 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="plane.DataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close" lazy-init="false">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="driverClassName" value="${mysql.driverClassName}"/>
         <!-- 基本属性 url、user、password -->
-        <!--<property name="url"-->
-                  <!--value="jdbc:mysql://192.168.96.92:3306/by_plane_1123?useUnicode=true&amp;characterEncoding=utf-8"/>-->
-        <!--<property name="username" value="dbadmin"/>-->
-        <!--<property name="password" value="123..Com"/>-->
-        <property name="url"
-                  value="jdbc:mysql://${mysql.url}?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="url" value="jdbc:mysql://${mysql.url}?useUnicode=true&amp;characterEncoding=utf-8"/>
         <property name="username" value="${mysql.username}"/>
         <property name="password" value="${mysql.password}"/>
         <!-- 配置初始化大小、最小、最大 -->
-        <property name="initialSize" value="2"/>
-        <property name="minIdle" value="2"/>
-        <property name="maxActive" value="300"/>
+        <property name="initialSize" value="${mysql.initialSize}"/>
+        <property name="minIdle" value="${mysql.minIdle}"/>
+        <property name="maxActive" value="${mysql.maxActive}"/>
         <!-- 配置获取连接等待超时的时间 -->
-        <property name="maxWait" value="60000"/>
+        <property name="maxWait" value="${mysql.maxWait}"/>
         <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
-        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${mysql.timeBetweenEvictionRunsMillis}"/>
         <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
-        <property name="minEvictableIdleTimeMillis" value="300000"/>
-        <property name="validationQuery" value="SELECT 1"/>
-        <property name="testWhileIdle" value="true"/>
-        <property name="testOnBorrow" value="false"/>
-        <property name="testOnReturn" value="false"/>
+        <property name="minEvictableIdleTimeMillis" value="${mysql.minEvictableIdleTimeMillis}"/>
+        <property name="validationQuery" value="${mysql.validationQuery}"/>
+        <property name="testWhileIdle" value="${mysql.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${mysql.testOnBorrow}"/>
+        <property name="testOnReturn" value="${mysql.testOnReturn}"/>
         <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
-        <property name="poolPreparedStatements" value="false"/>
-        <property name="maxPoolPreparedStatementPerConnectionSize"
-                  value="200"/>
+        <property name="poolPreparedStatements" value="${mysql.poolPreparedStatements}"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="${mysql.maxPoolPreparedStatementPerConnectionSize}"/>
         <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->
-        <property name="filters" value="stat"/>
+        <property name="filters" value="${mysql.filters}"/>
+    </bean>
+    <bean id="plane.DataSourceRead" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close" lazy-init="false">
+        <property name="driverClassName" value="${mysql.read.driverClassName}"/>
+        <!-- 基本属性 url、user、password -->
+        <property name="url" value="jdbc:mysql://${mysql.read.url}?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="username" value="${mysql.read.username}"/>
+        <property name="password" value="${mysql.read.password}"/>
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${mysql.read.initialSize}"/>
+        <property name="minIdle" value="${mysql.read.minIdle}"/>
+        <property name="maxActive" value="${mysql.read.maxActive}"/>
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${mysql.read.maxWait}"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${mysql.read.timeBetweenEvictionRunsMillis}"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="${mysql.read.minEvictableIdleTimeMillis}"/>
+        <property name="validationQuery" value="${mysql.read.validationQuery}"/>
+        <property name="testWhileIdle" value="${mysql.read.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${mysql.read.testOnBorrow}"/>
+        <property name="testOnReturn" value="${mysql.read.testOnReturn}"/>
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="${mysql.read.poolPreparedStatements}"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="${mysql.read.maxPoolPreparedStatementPerConnectionSize}"/>
+        <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->
+        <property name="filters" value="${mysql.read.filters}"/>
     </bean>
 
+    <bean id="dynamicDataSource" class="com.by.dynamic.config.dao.uitl.dynamicdatasource.DynamicDataSource">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry key="plane.DataSource" value-ref="plane.DataSource"></entry>
+                <entry key="plane.DataSourceRead" value-ref="plane.DataSourceRead"></entry>
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="plane.DataSource">
+        </property>
+    </bean>
 
     <!-- ========================================针对myBatis的配置项============================== -->
     <!-- 配置sqlSessionFactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 实例化sqlSessionFactory时需要使用上述配置好的数据源以及SQL映射文件 -->
-        <property name="dataSource" ref="plane.DataSource"/>
+        <property name="dataSource" ref="dynamicDataSource"/>
         <!-- 自动扫描mapping/目录下的所有SQL映射的xml文件, 省掉Configuration.xml里的手工配置
         value="classpath:mapping/*.xml"指的是classpath(类路径)下mapping包中的所有xml文件-->
         <property name="mapperLocations" value="classpath:mapping/*.xml"/>

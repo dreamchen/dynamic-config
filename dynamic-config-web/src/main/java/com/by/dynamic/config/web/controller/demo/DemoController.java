@@ -1,8 +1,9 @@
 package com.by.dynamic.config.web.controller.demo;
 
+import com.by.dynamic.config.dao.uitl.dynamicdatasource.DataSourceContextHolder;
 import com.by.dynamic.config.domain.DemoDomain;
 import com.by.dynamic.config.service.DemoService;
-import com.by.dynamic.config.service.impl.DynamicBeanImpl;
+import com.by.dynamic.config.service.DynamicBean;
 import com.by.dynamic.config.web.controller.BaseController;
 import com.by.dynamic.config.web.controller.JsonData;
 import com.by.dynamic.config.web.util.DisconfDataGetter;
@@ -10,12 +11,9 @@ import com.by.dynamic.config.web.util.PropertiesUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.List;
 
 /**
@@ -30,50 +28,15 @@ public class DemoController extends BaseController {
     @Resource
     private DemoService demoService;
     @Resource
-    private DynamicBeanImpl dynamicBean;
-
-
-    @RequestMapping("testFile")
-    @ResponseBody
-    public JsonData testFile(String filePath) {
-        JsonData jsonData = new JsonData(JsonData.FAILED);
-        jsonData.setMethod("testFile");
-        try {
-            File f = new File(filePath);
-            jsonData.setData(f);
-            jsonData.setStatus(JsonData.SUCCESS);
-        } catch (Exception e) {
-            jsonData.setErrorCode("10000");
-            jsonData.setErrorMessage(e.toString());
-//            e.printStackTrace();
-        }
-        return jsonData;
-    }
-
-
-    @RequestMapping("testDynamicBean")
-    @ResponseBody
-    public JsonData testDynamicBean() {
-        JsonData jsonData = new JsonData(JsonData.FAILED);
-        jsonData.setMethod("testDynamicBean");
-        try {
-            dynamicBean.sayHello();
-            jsonData.setData("success");
-            jsonData.setStatus(JsonData.SUCCESS);
-        } catch (Exception e) {
-            jsonData.setErrorCode("10000");
-            jsonData.setErrorMessage(e.toString());
-//            e.printStackTrace();
-        }
-        return jsonData;
-    }
+    private DynamicBean dynamicBean;
 
     @RequestMapping("getDemoList")
     @ResponseBody
-    public JsonData getDemoList() {
+    public JsonData getDemoList(String id) {
         JsonData jsonData = new JsonData(JsonData.FAILED);
         jsonData.setMethod("getDemoList");
         try {
+            DataSourceContextHolder.putDataSource(id);
             List<DemoDomain> list = this.demoService.getDemoList();
             jsonData.setData(list);
             jsonData.setStatus(JsonData.SUCCESS);
@@ -110,23 +73,6 @@ public class DemoController extends BaseController {
         try {
             String value = DisconfDataGetter.getByFileItem(path, key).toString();
             jsonData.setData(value);
-            jsonData.setStatus(JsonData.SUCCESS);
-        } catch (Exception e) {
-            jsonData.setErrorCode("10000");
-            jsonData.setErrorMessage(e.toString());
-//            e.printStackTrace();
-        }
-        return jsonData;
-    }
-
-    @RequestMapping("doDynamicBean")
-    @ResponseBody
-    public JsonData doDynamicBean() {
-        JsonData jsonData = new JsonData(JsonData.FAILED);
-        jsonData.setMethod("doDynamicBean");
-        try {
-            this.dynamicBean.sayHello();
-            jsonData.setData("do dyanmicBean say success!");
             jsonData.setStatus(JsonData.SUCCESS);
         } catch (Exception e) {
             jsonData.setErrorCode("10000");
@@ -182,7 +128,7 @@ public class DemoController extends BaseController {
 //
 //        ApplicationContext ac1 = WebApplicationContextUtils.getRequiredWebApplicationContext(ServletContext sc);
 //
-        WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
+//        WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
 //        ServletContext servletContext = webApplicationContext.getServletContext();
 //
 //        ServletContext application = ServletActionContext.getServletContext();
